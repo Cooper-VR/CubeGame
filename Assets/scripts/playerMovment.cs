@@ -15,6 +15,8 @@ public class playerMovment : MonoBehaviour
     public GameObject startButton;
     public colliderSpawn allObjects;
     public GameObject[] obejcts  = new GameObject[500];
+    public Quaternion playerRotation;
+    
     #endregion
 
     #region  privateVariables
@@ -22,11 +24,12 @@ public class playerMovment : MonoBehaviour
     private string baseText = "Score: ";
     private Collider playerCollider;
     private bool hit;
-    public Quaternion playerRotation;
+    private bool fell;
+    private float waitTime = 3f;
+    
     #endregion
 
     private void Start() {
-        obejcts = allObjects.allObjects;
         allObjects.enabled = false;
         playerRotation = transform.rotation;
         uiPanel.SetActive(true);
@@ -38,7 +41,9 @@ public class playerMovment : MonoBehaviour
 
     void FixedUpdate()
     {
+        obejcts = allObjects.allObjects;
         positionChecker();
+        sceneResetWait();
         if (hit == false){
             forceVector.z = speed;
             CameraPosition = transform.position;
@@ -67,27 +72,36 @@ public class playerMovment : MonoBehaviour
         }
     }
 
-    void positionChecker(){
-        if (playerPosition.position.y < -50f){
-            hit = true;
+    void sceneResetWait(){
+        if (hit == true){
+            waitTime -= 1* Time.deltaTime;
+            if (waitTime <= 0){
+                hit = false;
+                allObjects.enabled = false;
+                resetScene();
+                waitTime = 3;
+            }
+        } else if (fell == true){
             allObjects.enabled = false;
-            Debug.Log(playerPosition.position.y);
-            Debug.Log("fell");
             resetScene();
+            waitTime = 3;
+        }
+    }
+
+    void positionChecker(){
+        if (playerPosition.position.y < -20f){
+            fell = true;
         }
     }
 
     private void OnCollisionEnter(Collision playerCollider) {
-        if (Time.time > 1){
-            hit = true;
-            allObjects.enabled = false;
-            Debug.Log("hit");
-            resetScene();
-        }
+        hit = true;
     }
 
     public void startButtonClick(){
         hit = false;
+        waitTime = 3;
+        fell = false;
         allObjects.enabled = true;
         uiPanel.SetActive(false);
         startButton.SetActive(false);

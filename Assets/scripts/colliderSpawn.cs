@@ -21,31 +21,16 @@ public class colliderSpawn : MonoBehaviour
     private int index;
     #endregion
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+
 
     // Update is called once per frame
     void Update()
     {
+        allObjects = GameObject.FindGameObjectsWithTag("object");
+        DestroyFurthestObject();
         playerPositonZ = playerPosition.position.z;
-        if (playerPositonZ - startPositonZ > 30f){
-            startPositonZ = playerPositonZ;
-            Destroy(allObjects[0]);
-            for (int i = 0; i < allObjects.Length - 1; i++){
-            // moving elements downwards, to fill the gap at [index]
-                allObjects[i] = allObjects[i + 1];
-            }
-            for (int i = 0; i < allObjects.Length - 1; i++){
-            // moving elements downwards, to fill the gap at [index]
-                if (allObjects[i] == null){
-                    index = i;
-                }
-            }
-            allObjects[index] = null;
-        }
+        
+        allObjects[index] = null;
 
         if (Time.time - startTime > 0.15f){
             startTime = Time.time;
@@ -71,7 +56,36 @@ public class colliderSpawn : MonoBehaviour
             randomPosition.x = randomPositionCreator.Next(-8, 8);
             randomPosition.z = playerPosition.position.z + randomPositionCreator.Next(20, 150);
             initalSpawns[i] = Object.Instantiate(collisionPrefab, randomPosition, new Quaternion(0, 0, 0, 0));
-            allObjects[i] = initalSpawns[i];
         }
     }
+
+    void DestroyFurthestObject(){
+        if (FindFurthestObject().transform.position.z - transform.position.z < -10){
+            Debug.Log(FindFurthestObject().transform.position);
+            Destroy(FindFurthestObject());
+        }
+        
+    }
+
+    GameObject FindFurthestObject(){
+        GameObject[] allGameObject = allObjects;
+        int lowestValue = 200;
+        float[] objectZ = new float[allGameObject.Length];
+
+        for (int i = 0; i < allGameObject.Length; i++){
+
+            if (allGameObject[i] != null){
+                objectZ[i] = allGameObject[i].transform.position.z;
+            
+                if (i > 0){
+                    if (objectZ[i] < lowestValue){
+                        lowestValue = (int)objectZ[i];
+                    }
+                }
+            }
+        }
+
+        return allGameObject[System.Array.IndexOf(objectZ, lowestValue)];
+    }
+
 }
