@@ -26,6 +26,7 @@ public class playerMovment : MonoBehaviour
     private bool hit;
     private bool fell;
     private float waitTime = 3f;
+    private float startTime;
     
     #endregion
 
@@ -41,6 +42,7 @@ public class playerMovment : MonoBehaviour
 
     void FixedUpdate()
     {
+        startTime += 1 * Time.deltaTime;
         obejcts = allObjects.allObjects;
         positionChecker();
         sceneResetWait();
@@ -62,7 +64,7 @@ public class playerMovment : MonoBehaviour
                 forceVector.x = 0;
             }
 
-            if (rb.velocity.z < 50f){
+            if (rb.velocity.z <  startTime * 10){
                 rb.AddForce(forceVector.x * Time.deltaTime, 0, speed * Time.deltaTime);
             } else {
                 rb.AddForce(forceVector.x * Time.deltaTime, 0, 0 * Time.deltaTime);
@@ -76,7 +78,6 @@ public class playerMovment : MonoBehaviour
         if (hit == true){
             waitTime -= 1* Time.deltaTime;
             if (waitTime <= 0){
-                hit = false;
                 allObjects.enabled = false;
                 resetScene();
                 waitTime = 3;
@@ -105,9 +106,9 @@ public class playerMovment : MonoBehaviour
         allObjects.enabled = true;
         uiPanel.SetActive(false);
         startButton.SetActive(false);
-        allObjects.initalSpawn();
+        allObjects.initalSpawn(allObjects.allObjects);
         transform.rotation = Quaternion.Euler( new Vector3(0, 0, 0));
-        
+        startTime = 0;
     }
 
     void resetScene(){
