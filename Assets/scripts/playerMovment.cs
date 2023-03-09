@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+
 public class playerMovment : MonoBehaviour
 {
     #region publicVariables
@@ -31,7 +32,9 @@ public class playerMovment : MonoBehaviour
     #endregion
 
     private void Start() {
+
         allObjects.enabled = false;
+        
         playerRotation = transform.rotation;
         uiPanel.SetActive(true);
         startButton.SetActive(true);
@@ -72,6 +75,10 @@ public class playerMovment : MonoBehaviour
             
             score.text = baseText + Mathf.Round(transform.position.z).ToString();
         }
+    }
+
+    private void OnDrawGizmos() {
+        Gizmos.DrawCube(new Vector3())
     }
 
     void sceneResetWait(){
